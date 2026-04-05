@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Nexus OTP</title>
+	
+	<style>
+		body {
+			margin: 0;
+			font-family: 'Segoe UI';
+			background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
+			color: white;
+		}
+		
+		.container {
+			padding: 20px;
+			padding-bottom: 80px;
+		}
+		
+		h2 {
+			text-align: center;
+			margin-bottom: 10px;
+		}
+		
+		.card {
+			background: rgba(255, 255, 255, 0.06);
+			padding: 18px;
+			border-radius: 18px;
+			margin-top: 15px;
+			backdrop-filter: blur(15px);
+			box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+		}
+		
+		.plan,
+		.number {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background: rgba(0, 0, 0, 0.5);
+			padding: 12px;
+			border-radius: 12px;
+			margin-top: 10px;
+		}
+		
+		button {
+			background: linear-gradient(45deg, #ff9800, #ff5722);
+			border: none;
+			padding: 8px 14px;
+			border-radius: 10px;
+			color: white;
+			font-weight: bold;
+		}
+		
+		input {
+			width: 100%;
+			padding: 12px;
+			margin-top: 10px;
+			border-radius: 10px;
+			border: none;
+			background: #111;
+			color: white;
+		}
+		
+		.nav {
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			display: flex;
+			background: #111;
+		}
+		
+		.nav button {
+			flex: 1;
+			background: none;
+			font-size: 18px;
+		}
+		
+		.page {
+			display: none;
+		}
+		
+		.active {
+			display: block;
+		}
+		
+		.qr-box {
+			text-align: center;
+		}
+		
+		.qr-box img {
+			width: 200px;
+			border-radius: 12px;
+			margin-top: 10px;
+		}
+		
+		.title {
+			opacity: 0.7;
+			font-size: 14px;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<div class="container">
+		
+		<!-- REGISTER -->
+		<div id="register" class="page">
+			<h2>Create Account</h2>
+			
+			<div class="card">
+				<input id="name" placeholder="Full Name">
+				<input id="mobile" placeholder="Mobile Number">
+				<input id="pass" type="password" placeholder="Password">
+				<button onclick="register()">Register</button>
+			</div>
+		</div>
+		
+		<!-- DASHBOARD -->
+		<div id="home" class="page">
+			<h2>Nexus OTP</h2>
+			
+			<div class="card">
+				<h3>Balance</h3>
+				<h1>₹0</h1>
+				<p class="title">Active Plan: None</p>
+			</div>
+			
+			<div class="card">
+				<h3>Plans</h3>
+				
+				<div class="plan">
+					<div>
+						<b>₹99</b>
+						<p class="title">10 OTP</p>
+					</div>
+					<button onclick="buy(99)">Buy</button>
+				</div>
+				
+				<div class="plan">
+					<div>
+						<b>₹200</b>
+						<p class="title">25 OTP</p>
+					</div>
+					<button onclick="buy(200)">Buy</button>
+				</div>
+			</div>
+			
+			<div class="card">
+				<h3>Numbers</h3>
+				<div id="numbers"></div>
+			</div>
+		</div>
+		
+		<!-- DEPOSIT -->
+		<div id="deposit" class="page">
+			<h2>Deposit</h2>
+			
+			<div class="card qr-box">
+				<p>Scan QR & Pay</p>
+				<img src="ankush.jpg">
+				<p id="amountText"></p>
+			</div>
+		</div>
+		
+		<!-- SETTINGS -->
+		<div id="settings" class="page">
+			<h2>Profile</h2>
+			
+			<div class="card">
+				<input placeholder="Update Name">
+				<input placeholder="New Password">
+				<button>Update</button>
+			</div>
+			
+			<div class="card">
+				<button onclick="logout()">Logout</button>
+			</div>
+		</div>
+		
+	</div>
+	
+	<!-- NAV -->
+	<div class="nav">
+		<button onclick="nav('home')">🏠</button>
+		<button onclick="nav('deposit')">💰</button>
+		<button onclick="nav('settings')">⚙️</button>
+	</div>
+	
+	<script>
+		// LOGIN LOCK SYSTEM
+		window.onload = function() {
+			let user = localStorage.getItem("user");
+			
+			if (user) {
+				show('home');
+			} else {
+				show('register');
+			}
+		}
+		
+		// REGISTER
+		function register() {
+			let name = document.getElementById("name").value;
+			
+			if (name == "") {
+				alert("Fill details");
+				return;
+			}
+			
+			localStorage.setItem("user", name);
+			show('home');
+		}
+		
+		// LOGOUT
+		function logout() {
+			localStorage.removeItem("user");
+			show('register');
+		}
+		
+		// PAGE SWITCH (LOCKED)
+		function nav(page) {
+			let user = localStorage.getItem("user");
+			
+			if (!user) {
+				alert("Pehle register karo");
+				show('register');
+				return;
+			}
+			
+			show(page);
+		}
+		
+		function show(page) {
+			document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+			document.getElementById(page).classList.add("active");
+		}
+		
+		// BUY
+		function buy(amount) {
+			nav('deposit');
+			document.getElementById("amountText").innerText = "Pay ₹" + amount;
+		}
+		
+		// OTP
+		function otp() {
+			alert("Pehle plan buy karo");
+		}
+		
+		// NUMBERS
+		let container = document.getElementById("numbers");
+		
+		for (let i = 1; i <= 120; i++) {
+			let num = "+91 9798110" + (100 + i);
+			
+			let div = document.createElement("div");
+			div.className = "number";
+			
+			div.innerHTML = `
+    <span>${num}</span>
+    <button onclick="otp()">Get OTP</button>
+  `;
+			
+			container.appendChild(div);
+		}
+	</script>
+	
+</body>
+
+</html>
